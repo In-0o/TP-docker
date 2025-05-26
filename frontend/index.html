@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Docker TP</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Application Dockerisée</h1>
+      <div id="data">Chargement en cours...</div>
+    </div>
+
+    <script>
+      // Fonction pour afficher les données
+      function displayData(data) {
+        const container = document.getElementById("data");
+        if (data && data.data) {
+          // Formatage des données en HTML
+          let html = "<ul>";
+          data.data.forEach((item) => {
+            html += `<li>${item[0]} - ${item[1]} : ${item[2]}</li>`;
+          });
+          html += "</ul>";
+          container.innerHTML = html;
+        } else {
+          container.innerHTML = '<p class="error">Aucune donnée disponible</p>';
+        }
+      }
+
+      // Fetch des données
+      async function loadData() {
+        try {
+          const response = await fetch("http://localhost:5000/data");
+
+          if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+          }
+
+          const data = await response.json();
+          displayData(data);
+        } catch (error) {
+          document.getElementById(
+            "data"
+          ).innerHTML = `<p class="error">Échec du chargement : ${error.message}</p>`;
+          console.error("Erreur fetch:", error);
+        }
+      }
+
+      // Chargement au démarrage
+      document.addEventListener("DOMContentLoaded", loadData);
+    </script>
+  </body>
+</html>
