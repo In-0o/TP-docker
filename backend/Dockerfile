@@ -16,7 +16,7 @@ COPY --from=BUILD /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.
 COPY --from=BUILD /app .
 RUN chown -R appuser:appuser /app
 USER appuser
-#EXPOSE 5000 est-ce que c'est mieux de l'exposer dnas le dockerfile ou docker compose ?
+EXPOSE 5000
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
