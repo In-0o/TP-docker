@@ -1,11 +1,28 @@
 version: "3.8"
 
 services:
+
+  proxy:
+      image: traefik:v2.5
+      command:
+        - --api.insecure=true
+        - --providers.docker
+        - --entrypoints.web.address=:80
+      ports:
+        - "8080:80"
+        - "8081:8080"
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+      networks:
+        - app-network
   backend:
     build:
       context: ./backend
-    ports:
-      - "5000:5000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/data`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.services.backend.loadbalancer.server.port=5000"
     environment:
       - ENV=${ENV_FLASK}
       - FLASK_DEBUG=${FLASK_DEBUG}
@@ -19,8 +36,11 @@ services:
   frontend:
     build:
       context: ./frontend
-    ports:
-      - "8080:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
     depends_on:
       backend:
         condition: service_healthy

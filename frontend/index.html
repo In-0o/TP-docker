@@ -30,7 +30,7 @@
       // Fetch des données
       async function loadData() {
         try {
-          const response = await fetch("http://localhost:5000/data");
+          const response = await fetch("http://localhost:8080/data");
 
           if (!response.ok) {
             throw new Error(`Erreur HTTP: ${response.status}`);
